@@ -5,7 +5,7 @@ C’est le cas pour notre application. Avant la création d’une tour, on véri
 
 TourController.js
 
-exports.checkBody=(req,res,next)=>{
+```exports.checkBody=(req,res,next)=>{
     if(!req.body.name || !req.body.price){
         return res.status(400).json({
             status:'Fail',
