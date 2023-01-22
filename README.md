@@ -10,8 +10,7 @@ Cette partie nous aidera à comprendre comment faire pour faire un système d'au
 Nous venons de créer notre middleware, et nous faisons en sorte que le contenu de ce Middleware, s'affiche
 lorsque nous faisons appel à notre methode GET 
 
-```
-const getAllTours = (req, res) => {
+```const getAllTours = (req, res) => {
   console.log(req.requestTime)
   res.status(200).json({
     statuts: "success",
