@@ -22,7 +22,7 @@ const updateUser=(req,res)=>{
     message:"Cette route n'est pas encore définie"
   })
 }```
-Dans cette partie, nous venons de créer notre ressource. Nous sommes dans la vidéo 6.016
+Dans cette partie, nous venons de créer notre ressource. Nous sommes dans la vidéo 6.015
 une méthode de type ressource est une méthode d'une classe de 
 contrôleur qui gère les requêtes HTTP pour une ressource spécifique. 
 Ces méthodes peuvent inclure des actions telles que l'affichage, la création, la mise à jour et la suppression d'une ressource. 
