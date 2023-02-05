@@ -7,8 +7,11 @@ const tourSchema = new mongoose.Schema(
       required: [true, "Une tour se doit d'avoir un nom"],
       unique: true,
       trim: true,
+      maxlength: [40, "A tour name must have less or equal then 40 characters"],
+      minlength: [10, "A tour name must have more or equal then 10 characters"],
+      // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
-    slug:String,
+    slug: String,
     duration: {
       type: Number,
       required: [true, "A tour must be a duration"],
@@ -36,7 +39,17 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Une tour doit avoir un prix"],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // this only points to current doc on NEW document creation
+          // Si le priceDiscount < price, la requête ne va pas se lancer
+          return val < this.price; 
+        },
+        message: "Discount price ({VALUE}) should be below regular price",
+      },
+    },
     summary: {
       type: String,
       trim: true,
@@ -75,7 +88,7 @@ tourSchema.virtual("durationWeeks").get(function () {
 // DOCUMENT MIDDLEWARE : runs before .save() and create()
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
-  next()
+  next();
 });
 
 // tourSchema.pre("save",function(next){
@@ -90,14 +103,14 @@ tourSchema.pre("save", function (next) {
 
 // QUERY MIDDLEWARE
 
-tourSchema.pre(/^find/,function(next){
+tourSchema.pre(/^find/, function (next) {
   // Your logic here
-  this.find({secretTour:{$ne:true}})
-  next()
-})
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function(next) {
+tourSchema.pre("aggregate", function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
   console.log(this.pipeline());
