@@ -77,13 +77,22 @@ exports.deleteTour = async (req, res) => {
 
 exports.getAllTours = async (req, res) => {
   try {
+    // 1) FILTERING
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
-    console.log(req.query, excludedFields);
-    const query = Tour.find(queryObj);
+
+    // 2) Advanced Filtering
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
+    
+
+    const query = Tour.find(JSON.parse(queryString));
+    // {difficulty:'easy', duration :{$gt:5}}
     const tours = await query;
-    // const tours=await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
 
     res.status(200).json({
       status: "success",
