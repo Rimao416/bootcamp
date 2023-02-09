@@ -1,7 +1,7 @@
 // const crypto = require('crypto');
 const mongoose = require("mongoose");
 const validator = require("validator");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -40,14 +40,21 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.pre('save',async function(next){
-    // Cette fonction s'exécute seulement si le mot de passe a été modifié
-    if(!this.isModified('password')) return next
-    // Le mot de passe sera hashé en 12 Tours
-    this.password=await bcrypt.hash(this.password,12)
-    // On supprime le champ de la modification de la confirmation du mot de passe
-    this.passwordConfirm=undefined
-})
+userSchema.pre("save", async function (next) {
+  // Cette fonction s'exécute seulement si le mot de passe a été modifié
+  if (!this.isModified("password")) return next;
+  // Le mot de passe sera hashé en 12 Tours
+  this.password = await bcrypt.hash(this.password, 12);
+  // On supprime le champ de la modification de la confirmation du mot de passe
+  this.passwordConfirm = undefined;
+});
+
+userSchema.methods.correctPassword = function (
+  candidatePassword,
+  userPassword
+) {
+  return bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model("User", userSchema);
 
