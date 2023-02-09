@@ -1,4 +1,11 @@
 const AppError = require("./../utils/appError");
+
+const handleJWTExpiredError = () =>
+  new AppError("Le token a expiré, connectez vous à nouveau",401);
+
+const handleJWTError = () =>
+  new AppError("Invalid Token, Conntectez vous encore", 401);
+
 const handleCastErrorDB = (err) => {
   const message = `Invalid Id ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
@@ -10,8 +17,8 @@ const handleDuplicatesDB = (err) => {
   return new AppError(message, 400);
 };
 const handleValidationErrorDB = (err) => {
-  const errors=Object.values(err.errors).map(el=>el.message)
-  const message = `Invalid input data ${errors.join('. ')}`;
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data ${errors.join(". ")}`;
   return new AppError(message, 400);
 };
 
@@ -56,6 +63,8 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicatesDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
+    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
     sendErrorProd(error, res);
   }
 };

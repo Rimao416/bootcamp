@@ -1,3 +1,4 @@
+const { promisify } = require("util");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const User = require("./../models/userModel");
@@ -44,4 +45,38 @@ exports.login = catchAsync(async (req, res, next) => {
     status: "success",
     token,
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Obtenir le token et voir si il existe
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    return next(new AppError("Vous n'etes pas connecté, connectez vous"));
+  }
+  // 2) Verification du token
+
+  let decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // 3) Vérifier si l'utilisateur existe
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    return next(new AppError("Le token de cet utilisateur n'existe plus"));
+  }
+
+  // 4) Vérifier si le mot de passe a changé après la création du token
+
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError("L'utilisateur a recemment changé son mot de passe"),
+      401
+    );
+  }
+
+  next();
 });
