@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { promisify } = require("util");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/appError");
@@ -125,6 +126,33 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError("Erreur lors de l'envoie du mail"), 500);
   }
 });
-exports.resetPassword = (req, res, next) => {
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  // 1) Get User based on the token
+  const hashedToken = crypto
+  .createHash("sha256")
+  .update(req.params.token)
+  .digest("hex");
 
-};
+const user = await User.findOne({
+  passwordResetToken: hashedToken,
+  passwordResetExpires: { $gt: Date.now() },
+});
+  console.log(user);
+  // 2) Si le token n'a pas expiré et qu'il y'a un utilisateur, définit un mot de passe
+  if (!user) {
+    return next(new AppError("Token Invalide ou a expiré", 400));
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  // 3) Modifier l'attribut changedPasswordAt pour l'utilisateur
+
+  // 4) Connectez l'utilisateur, l'envoie d'un JWT code
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
