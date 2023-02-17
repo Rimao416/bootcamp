@@ -1,6 +1,7 @@
 const express = require("express"); //Faire appel au Package d'expressJs
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const helmet=require("helmet")
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
@@ -8,6 +9,9 @@ const userRouter = require("./routes/userRoutes");
 const app = express();
 
 // 1) MIDDLEWARE
+
+// Définir une sécurité pour nos entêtes HTTP
+app.use(helmet())
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
@@ -21,7 +25,6 @@ const limiter = rateLimit({
   message: "Too Many Request From This Ip, please try again",
 });
 app.use("/api", limiter);
-
 
 app.use((req, res, next) => {
   req.requestTime = new Date();
