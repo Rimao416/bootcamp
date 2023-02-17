@@ -34,7 +34,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Update User Document
   const filteredBody = filterObj(req.body, "name", "email");
-  const updateUser = await User.findByIdAndUpdate(req.user.id,filteredBody, {
+  const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
   });
@@ -65,6 +65,15 @@ exports.updateUser = (req, res) => {
     message: "Cette route n'est pas encore définie",
   });
 };
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
 exports.deleteUser = (req, res) => {
   res.status(500).json({
     status: "Error",
