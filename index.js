@@ -1,9 +1,10 @@
 const express = require("express"); //Faire appel au Package d'expressJs
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
-const helmet=require("helmet")
-const mongoSanitize=require("express-mongo-sanitize")
-const xss=require("xss")
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
@@ -14,15 +15,17 @@ const app = express();
 // 1) MIDDLEWARE
 
 // Définir une sécurité pour nos entêtes HTTP
-app.use(helmet())
+app.use(helmet());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.json());
-// Data Sanitization against NoSql query Injections
-app.use(mongoSanitize())
-// Data Sanitization against XSS
-app.use(xss())
+// data sanitization against NOSQL Query Injection
+app.use(mongoSanitize());
+// data sanitization against XSS
+app.use(xss());
+// Prevent parameter Pollution
+app.use(hpp());
 
 app.use(express.static(`${__dirname}/public`));
 
