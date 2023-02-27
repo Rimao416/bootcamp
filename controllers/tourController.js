@@ -11,7 +11,7 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   // First Way
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id)
   if (!tour) {
     return next(new AppError("No tour Found with that id", 404));
   }
@@ -152,3 +152,4 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     },
   });
 });
+
