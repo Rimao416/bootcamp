@@ -1,7 +1,7 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const User = require("./../models/userModel");
-
+const factory = require("./handlerFactory");
 // REQUEST
 const filterObj = (obj, ...allowedFields) => {
   let newObj = [];
@@ -59,12 +59,7 @@ exports.createUser = (req, res) => {
     message: "Cette route n'est pas encore définie",
   });
 };
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: "Error",
-    message: "Cette route n'est pas encore définie",
-  });
-};
+
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
@@ -74,12 +69,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "Error",
-    message: "Cette route n'est pas encore définie",
-  });
-};
+exports.updateUser =factory.updateOne(User)
+exports.deleteUser = factory.deleteOne(User);
 
 // app.get("/api/v1/tours", getAllTours);
 // app.post("/api/v1/tours", createTour);
