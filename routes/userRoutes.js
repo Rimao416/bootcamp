@@ -8,13 +8,16 @@ router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
-router.patch(
-  "/updateMyPassword",
-  authController.protect,
-  authController.updatePassword
-);
-router.patch("/updateMe", authController.protect, userController.updateMe);
-router.delete("/deleteMe", authController.protect, userController.deleteMe);
+// Protège toutes les routes après ce middleware
+router.use(authController.protect);
+
+router.get("/me", userController.getMe, userController.getUser);
+router.patch("/updateMyPassword", authController.updatePassword);
+router.patch("/updateMe", userController.updateMe);
+router.delete("/deleteMe", userController.deleteMe);
+
+// Ceci veut simplement dire que toutes les routes qui viendront après cette restriction ne s'exécuteront que si le role est admin
+router.use(authController.restrictTo("admin"));
 
 router
   .route("/")
@@ -25,6 +28,5 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
-
 
 module.exports = router;
