@@ -1,34 +1,52 @@
-const fs = require('fs');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const Tour = require('./../../models/tourModel');
+const fs = require("fs");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const Tour = require("./../../models/tourModel");
+const Review = require("./../../models/reviewModel");
+const User = require("./../../models/userModel");
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: "./config.env" });
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
+const DB = process.env.DATABASE_LOCAL.replace(
+  "<PASSWORD>",
   process.env.DATABASE_PASSWORD
 );
+// const DB = process.env.DATABASE.replace(
+//   "<PASSWORD>",
+//   process.env.DATABASE_PASSWORD
+// );
 
-mongoose.set('strictQuery',true)
+mongoose.set("strictQuery", true);
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log('DB connection successful!'));
+  .then(() => console.log("DB connection successful!"));
 
 // READ JSON FILE
 const tours = JSON.parse(
   // fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/tours.json`, "utf-8")
+);
+// READ JSON FILE
+const users = JSON.parse(
+  // fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/users.json`, "utf-8")
+);
+// READ JSON FILE
+const reviews = JSON.parse(
+  // fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/reviews.json`, "utf-8")
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
     await Tour.create(tours);
-    console.log('Data successfully loaded!');
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+    console.log("Data successfully loaded!");
   } catch (err) {
     console.log(err);
   }
@@ -39,17 +57,19 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
-    console.log('Data successfully deleted!');
+    await User.deleteMany();
+    await Review.deleteMany();
+    console.log("Data successfully deleted!");
   } catch (err) {
     console.log(err);
   }
   process.exit();
 };
 
-if (process.argv[2] === '--import') {
+if (process.argv[2] === "--import") {
   importData();
-} else if (process.argv[2] === '--delete') {
+} else if (process.argv[2] === "--delete") {
   deleteData();
 }
 
-console.log(process.argv)
+console.log(process.argv);
