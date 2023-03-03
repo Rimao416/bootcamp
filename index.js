@@ -11,8 +11,11 @@ const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter=require("./routes/reviewRoutes")
+const viewRouter=require("./routes/viewRoutes")
+const cookieParser=require("cookie-parser")
 const { mongo } = require("mongoose");
 const app = express();
+
 
 
 app.set('view engine', 'pug');
@@ -25,6 +28,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.json());
+app.use(cookieParser())
 // data sanitization against NOSQL Query Injection
 app.use(mongoSanitize());
 // data sanitization against XSS
@@ -56,9 +60,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/',(req,res)=>{
-  res.status(200).render('base')
-})
+app.use("/",viewRouter)
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);

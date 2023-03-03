@@ -13,11 +13,11 @@ router.use(authController.protect);
 
 router.get("/me", userController.getMe, userController.getUser);
 router.patch("/updateMyPassword", authController.updatePassword);
-router.patch("/updateMe", userController.updateMe);
+router.patch("/updateMe", userController.uploadUserPhoto,  userController.updateMe);
 router.delete("/deleteMe", userController.deleteMe);
 
 // Ceci veut simplement dire que toutes les routes qui viendront après cette restriction ne s'exécuteront que si le role est admin
-router.use(authController.restrictTo("admin"));
+// router.use(authController.restrictTo("admin"));
 
 router
   .route("/")
