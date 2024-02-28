@@ -8,10 +8,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
-const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
-const reviewRouter=require("./routes/reviewRoutes")
-const viewRouter=require("./routes/viewRoutes")
 const cookieParser=require("cookie-parser")
 const { mongo } = require("mongoose");
 const app = express();
@@ -60,10 +57,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/",viewRouter)
-app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/reviews", reviewRouter);
 
 // Handle Errors
 
