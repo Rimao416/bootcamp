@@ -1,1 +1,1 @@
-Nous sommes dans la vidéo 13.006 et nous avons appris comment rédimensionner une photo avec multer
+Nous avons initialisé un projet vide nodejs, et avons fait la mise à jour des différents packgages
